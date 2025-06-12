@@ -6,7 +6,8 @@ require('dotenv').config();
 const pointRelaisRoutes = require('./routes/pointRelais');
 const app = express();
 const PORT = 3000;
-
+const cors = require('cors');
+app.use(cors());
 app.use(bodyParser.json());
 
 const relaisRoute = require('./routes/pointRelais');
