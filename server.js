@@ -3,17 +3,13 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 const xml2js = require('xml2js');
 require('dotenv').config();
-const pointRelaisRoutes = require('./routes/pointRelais');
+const cors = require('cors');
+
 const app = express();
 const PORT = 3000;
-const cors = require('cors');
+
 app.use(cors());
 app.use(bodyParser.json());
-
-const relaisRoute = require('./routes/pointRelais');
-app.use('/api', relaisRoute);
-
-const apiUrl = 'https://connect-api-sandbox.mondialrelay.com/api/Shipment';
 
 const context = {
   Login: process.env.MR_LOGIN,
@@ -56,7 +52,7 @@ function buildDynamicXml(body) {
           DeliveryMode: {
             $: {
               Mode: body.deliveryMode,
-              Location: body.deliveryLocation
+              Location: body.deliveryLocation // must be a valid code like FR-66974
             }
           },
           CollectionMode: {
@@ -74,7 +70,7 @@ function buildDynamicXml(body) {
               Depth: { $: { Value: '10', Unit: 'cm' } }
             }
           },
-          DeliveryInstruction: 'Livrer au fond à droite',
+          DeliveryInstruction: 'Livrer au fond a droite',
           Sender: {
             Address: {
               Title: 'Mr',
@@ -121,14 +117,9 @@ function buildDynamicXml(body) {
 
 app.post('/test-shipment', async (req, res) => {
   try {
-    // Validate required fields
-    if (!req.body.orderNo || !req.body.customerNo || !req.body.sender || !req.body.recipient) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
     const xmlRequest = buildDynamicXml(req.body);
-    
-    const response = await axios.post(apiUrl, xmlRequest, {
+
+    const response = await axios.post(process.env.MR_API_URL, xmlRequest, {
       headers: {
         'Content-Type': 'text/xml',
         'Accept': 'application/xml'
@@ -142,14 +133,14 @@ app.post('/test-shipment', async (req, res) => {
       res.json(result);
     });
   } catch (error) {
-    console.error('Erreur lors de la requête à l\'API Mondial Relay :', error.message);
+    console.error('Erreur lors de l’appel à l’API Mondial Relay :', error.message);
     if (error.response) {
       console.error('Response data:', error.response.data);
     }
-    res.status(500).send('Erreur lors de l\'appel à l\'API');
+    res.status(500).send('Erreur lors de l’appel à l’API');
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Serveur backend en cours d'exécution sur http://localhost:${PORT}`);
+  console.log(`Serveur backend en cours sur http://localhost:${PORT}`);
 });
