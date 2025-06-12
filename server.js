@@ -15,7 +15,8 @@ app.use('/api', relaisRoute);
 
 
 
-const apiUrl = 'https://connect-api-sandbox.mondialrelay.com/api/shipment';
+const apiUrl = 'https://connect-api-sandbox.mondialrelay.com/api/Shipment'; // ✅ SANDBOX
+
 
 const context = {
   Login: process.env.MR_LOGIN,
