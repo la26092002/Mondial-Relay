@@ -52,8 +52,8 @@ router.post('/relais', async (req, res) => {
     nombre = '10'
   } = req.body;
 
-  const enseigne = process.env.MR_CUSTOMER_ID;
-  const privateKey = process.env.MR_PRIVATE_KEY;
+  const enseigne = process.env.MR_ENSEIGNE;
+  const privateKey = process.env.MR_KEY_PRIVEE;
 
   const security = generateSecurityHash({
     Enseigne: enseigne,
